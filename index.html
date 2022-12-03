@@ -20,9 +20,11 @@
     <p>異なる要件が、1 つの Excel ファイルの 2 つのタグに既に配置されていることを確認してください。 
         また、2 つの要件ファイルは同じ形式を共有しているため、ツールは 2 つのファイルの違いを比較できます。</p>
 
-    <input type="file" id="fileUpload" />
-    <input type="button" id="upload" value="Compare" onclick="uploadExcelProcess()" />
-
+    <div class="w3-container">
+        <input type="file" id="fileUpload" />
+        <input type="button" id="upload" value="Compare" onclick="uploadExcelProcess()" />
+        <button onclick="clearTable()">Clear</button>
+    </div>
     <br/>
 
     <div id="ExcelTable" class="w3-container"></div>
@@ -51,6 +53,14 @@
             } else {
                 alert("Please upload a valid Excel file.");
             }
+        }
+    
+        function clearTable() {
+            // Clear input
+            document.getElementById("fileUpload").value = "";
+
+            // Clear table
+            document.getElementById("ExcelTable").innerHTML = "";
         }
     </script>
 </body>
