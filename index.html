@@ -10,18 +10,22 @@
     <script type="text/javascript" src="./js/xlsx.full.min.js"></script>
     <script type="text/javascript" src="./js/jszip.js"></script>
     <script type="text/javascript" src="./js/req.analysis.js"></script>
+
+    <!-- Include the CSS files -->
+    <link rel="stylesheet" type="text/css" href="./css/w3.css">
 </head>
 
 <body>
-    <h1>My First Heading</h1>
-    <p>My first paragraph.</p>
-
+    <h1>要件分析ツール</h1>
+    <p>異なる要件が、1 つの Excel ファイルの 2 つのタグに既に配置されていることを確認してください。 
+        また、2 つの要件ファイルは同じ形式を共有しているため、ツールは 2 つのファイルの違いを比較できます。</p>
 
     <input type="file" id="fileUpload" />
-    <input type="button" id="upload" value="Upload" onclick="uploadExcelProcess()" />
+    <input type="button" id="upload" value="Compare" onclick="uploadExcelProcess()" />
+
     <br/>
 
-    <div id="ExcelTable"></div>
+    <div id="ExcelTable" class="w3-container"></div>
 
     <script type="text/javascript">
         function uploadExcelProcess() {
