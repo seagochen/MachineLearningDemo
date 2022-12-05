@@ -45,7 +45,7 @@ function compareSheets(firstJsonObj, secondJsonObj) {
     // If the two sheets have different size of rows, return false
     if (Object.keys(firstJsonObj).length !== Object.keys(secondJsonObj).length) {
         return {
-            result: false,
+            result: -1,
             message: "The two sheets have different size of rows.",
             data: {}
         }    
@@ -69,7 +69,7 @@ function compareSheets(firstJsonObj, secondJsonObj) {
         // If the two rows have different size of columns, return false
         if (sheetRow_1.length !== sheetRow_2.length) {
             return {
-                result: false,
+                result: -1,
                 message: "The two sheets have different size of columns.",
                 data: {}
             }    
@@ -99,14 +99,14 @@ function compareSheets(firstJsonObj, secondJsonObj) {
     // If the compareResult is empty, return true
     if (Object.keys(compareResult).length === 0) {
         return {
-            result: true,
+            result: 0,
             message: "The two sheets are the same.",
             data: {}
         }
     } else {
         // Else return false
         return {
-            result: true,
+            result: 1,
             message: "The two sheets are different.",
             data: {
                 "rows": Object.keys(compareResult).length,
@@ -211,7 +211,11 @@ function analysisExcel(data) {
     // Compare the two sheets
     const result = compareSheets(firstJson, secondJson);
 
-    if (result.result) {
+    // Depending on the result, show the message
+    if (result.result !== 1) {
+        
+        alert(result.message);
+    } else {
 
         // If the two sheets are not the same, show the differences in a table
         const table = convertJsonToTable(firstSheetName, secondSheetName, result.data);
@@ -224,18 +228,5 @@ function analysisExcel(data) {
 
         // Add the table to the div
         excelTable.appendChild(table);
-
-        // // Create a html table
-        // let table = document.createElement('table');
-
-        // Create a html table head
-
-        // Go through the result and generate the table
-   
     }
-
-
-    // var ExcelTable = document.getElementById("ExcelTable");
-    // ExcelTable.innerHTML = "";
-    // ExcelTable.appendChild(myTable);
 }

@@ -8,7 +8,6 @@
 
     <!-- Include the Js files -->
     <script type="text/javascript" src="./js/xlsx.full.min.js"></script>
-    <script type="text/javascript" src="./js/jszip.js"></script>
     <script type="text/javascript" src="./js/req.analysis.js"></script>
 
     <!-- Include the CSS files -->
@@ -16,9 +15,19 @@
 </head>
 
 <body>
-    <h1>要件分析ツール</h1>
-    <p>異なる要件が、1 つの Excel ファイルの 2 つのタグに既に配置されていることを確認してください。 
-        また、2 つの要件ファイルは同じ形式を共有しているため、ツールは 2 つのファイルの違いを比較できます。</p>
+    <h1>Requirement Comparison Tool (Beta)</h1>
+    <p>1. Place the requirement definitions in two of sheets in the same Excel file, which you want to compare.</p>
+    <p>2. Click the "Choose File" button and select the Excel file.</p>
+    <p>3. Click the "Compare" button and wait for the result.</p>
+
+    <br />
+    <p>This tool cannot handle the following cases:</p>
+    <ul>
+        <li>Requirement definitions are not in the same Excel file.</li>
+        <li>Requirement definitions are not in the same column.</li>
+        <li>Requirement definitions are not in the same row.</li>
+        <li>Requirement definitions are not in the same order.</li>
+    </ul>
 
     <div class="w3-container">
         <input type="file" id="fileUpload" />
@@ -31,6 +40,7 @@
 
     <script type="text/javascript">
         function uploadExcelProcess() {
+
             //Reference the FileUpload element.
             const fileUpload = document.getElementById("fileUpload");
 
@@ -51,7 +61,7 @@
                     alert("This browser does not support HTML5.");
                 }
             } else {
-                alert("Please upload a valid Excel file.");
+                alert("Please select a valid Excel file.");
             }
         }
     
