@@ -1,0 +1,73 @@
+[
+	{
+	"start_row": "1",
+	"start_col": "A",
+	"elements": {
+		"A": "1",
+		"B": "2",
+		"C": "3",
+		"D": "4",
+		"E": "5",
+		"F": null
+	},
+	"leaves": [{
+		"start_row": "2",
+		"start_col": "B",
+		"elements": {
+			"A": "",
+			"B": "a1",
+			"C": "b1",
+			"D": "c1",
+			"E": "d1",
+			"F": ""
+		},
+		"leaves": [{
+			"start_row": "3",
+			"start_col": "C",
+			"elements": {
+				"A": "",
+				"B": "",
+				"C": "e1",
+				"D": "f1",
+				"E": "g1",
+				"F": ""
+			},
+			"leaves": null
+		}, {
+			"start_row": "4",
+			"start_col": "C",
+			"elements": {
+				"A": "",
+				"B": "",
+				"C": "e2",
+				"D": "f2",
+				"E": "g2",
+				"F": ""
+			},
+			"leaves": null
+		}]
+	}, {
+		"start_row": "5",
+		"start_col": "B",
+		"elements": {
+			"A": "",
+			"B": "a2",
+			"C": "b2",
+			"D": "c2",
+			"E": "d2",
+			"F": ""
+		},
+		"leaves": null
+	}]}, {
+	"start_row": "6",
+	"start_col": "A",
+	"elements": {
+		"A": "2",
+		"B": "3",
+		"C": "4",
+		"D": "5 ",
+		"E": "6",
+		"F": ""
+	},
+	"leaves": null
+}]
