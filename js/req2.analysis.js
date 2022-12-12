@@ -216,41 +216,82 @@ function csvToJson(csvString) {
 
 /**
  * 
- * @param {JSON} csvJson 
+ * @param {JSON} csvJson
  * @returns 
  */
-function compactedCsvJson(csvJson) {
-    // First, we'll create a new empty object to store the compacted JSON data
-    const compactedJson = {};
+function finedCsvJson(csvJson) {
 
-    // Next, we'll loop through each row in the original JSON data
-    for (const [rowIndex, row] of Object.entries(csvJson)) {
-        // For each row, we'll create a new empty object to store the compacted row data
-        const compactedRow = {};
+    // Use a dictionary to store which columns are empty
+    const emptyColumns = {};
+    const emptyRows = [];
 
-        // Then, we'll loop through each column in the row
-        for (const [columnIndex, columnValue] of Object.entries(row)) {
-            // If the column value is not empty, we'll add it to the compacted row object
-            if (columnValue.trim() !== '') {
-                compactedRow[columnIndex] = columnValue;
+    // Iterate over the rows in the csvJson
+    for (let i = 1; i <= Object.keys(csvJson).length; i++) {
+
+        // The count of empty columns in the current row
+        let emptyColumnCount = 0;
+
+        // Iterate over the columns in the current row
+        for (let j = 1; j <= Object.keys(csvJson[i]).length; j++) {
+
+            // If the current column is empty, add it to the emptyColumns dictionary
+            if (csvJson[i][convertToExcelColumnName(j)] === "") {
+
+                // If emptyColumns does not have a key for the current column, add it
+                if (emptyColumns[convertToExcelColumnName(j)] === undefined) {
+                    emptyColumns[convertToExcelColumnName(j)] = 1;
+                } else {
+                    // Otherwise, increment the value of the key
+                    emptyColumns[convertToExcelColumnName(j)] += 1;
+                }
+
+                // Increment the count of empty columns in the current row
+                emptyColumnCount += 1;
             }
         }
 
-        // If the compacted row object is not empty, we'll add it to the compacted JSON object
-        if (Object.keys(compactedRow).length > 0) {
-            compactedJson[rowIndex] = compactedRow;
+        // If the current row is empty, add it to the emptyRows array
+        if (emptyColumnCount === Object.keys(csvJson[i]).length) {
+            emptyRows.push(i);
         }
     }
 
-    // Finally, we'll return the compacted JSON object
-    return compactedJson;
+    // How many rows are in the csvJson?
+    const numberOfRows = Object.keys(csvJson).length;
+
+    // Only keep the count of empty columns that are empty in every row
+    for (let key in emptyColumns) {
+        if (emptyColumns[key] !== numberOfRows) {
+                delete emptyColumns[key];
+        }
+    }
+    
+    // Now convert the emptyColumns dictionary into an array
+    const emptyColumnsArray = Object.keys(emptyColumns);
+
+    // Remove the empty rows from the csvJson
+    if (emptyRows.length > 0) {
+        for (let i = 0; i < emptyRows.length; i++) {
+            delete csvJson[emptyRows[i]];
+        }
+    }
+    
+    // Remove the empty columns from the csvJson
+    if (emptyColumnsArray.length > 0) {
+        for (let i = 1; i <= Object.keys(csvJson).length; i++) {
+            for (let j = 0; j < emptyColumnsArray.length; j++) {
+                delete csvJson[i][emptyColumnsArray[j]];
+            }
+        }
+    }
+
+    return csvJson;
 }
-  
 
-const csvString = "a,b,c,,e\nf,g,h,,j\nk,l,m,,o\np,q,r,,t\nu,v,w,,y\n,,,,\nz,1,2,,4\n5,6,7,,9\n0,!,@,,$\n%,^,&,,(";
+
+const csvString = "a,,c,,e\nf,g,h,,j\nk,l,m,,o\np,q,r,,t\nu,v,w,,y\n,,,,\nz,1,2,,4\n5,6,7,,9\n0,!,@,,$\n%,^,&,,(";
 const csvJson = csvToJson(csvString);
-
 console.log(csvJson);
 
-const compactedJson = compactedCsvJson(csvJson);
+const compactedJson = finedCsvJson(csvJson);
 console.log(compactedJson);
