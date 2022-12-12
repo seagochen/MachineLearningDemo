@@ -2,14 +2,13 @@
 class CSVDefinedTreeNode {
     /**
      * constructor
-     * @param {tuple} startPos
-     * @param {string} selfValue
-     * @param {dict} elements
+     * @param {number} startRow
+     * @param {string} startCol
+     * @param {JSON} elements
      */
-    constructor(startPos, selfValue, elements) {
-        this.startRow = startPos[0];
-        this.startCol = startPos[1];
-        this.selfValue = selfValue;
+    constructor(startRow, startCol, elements) {
+        this.startRow = startRow;
+        this.startCol = startCol;
         this.elements = elements;
         this.children = [];
         this.parent = null;
@@ -32,16 +31,8 @@ class CSVDefinedTreeNode {
     }
 
     /**
-     * getter for the self value
-     * @returns {string}
-     */
-    get myValue() {
-        return this.selfValue;
-    }
-
-    /**
      * getter for the cell position
-     * @returns {tuple}
+     * @returns {string[]}
      */
     get myPosition() {
         return [this.startRow, this.startCol];
@@ -57,7 +48,7 @@ class CSVDefinedTreeNode {
 
     /**
      * getter for the elements
-     * @returns {array}
+     * @returns {JSON}
      */
     get myElements() {
         return this.elements;
@@ -90,7 +81,7 @@ class CSVDefinedTreeNode {
 
     /**
      * method to add an element
-     * @param {dict} element 
+     * @param {JSON} element
      */
     addElement(element) {
         this.elements.push(element);
@@ -98,7 +89,7 @@ class CSVDefinedTreeNode {
 
     /**
      * method to remove a child
-     * @param {CsvDefinedTreeNode} child 
+     * @param {CSVDefinedTreeNode} child
      */
     removeChild(child) {
         this.children.splice(this.children.indexOf(child), 1);
@@ -106,7 +97,7 @@ class CSVDefinedTreeNode {
 
     /**
      * method to remove an element
-     * @param {dict} element 
+     * @param {JSON} element
      */
     removeElement(element) {
         this.elements.splice(this.elements.indexOf(element), 1);
@@ -215,7 +206,7 @@ function csvToJson(csvString) {
 
 
 /**
- * 
+ * This function will delete the empty rows and columns in the csvJson
  * @param {JSON} csvJson
  * @returns 
  */
@@ -291,12 +282,51 @@ function finedCsvJson(csvJson) {
 }
 
 
+/**
+ * This function will generate a tree from the Json object
+ * @param {JSON} finedJson 
+ */
+function genJsonTree(finedJson) {
+    // Use a list to perform a stack operation
+    const stack = [];
+
+    // Now iterate over the rows in the finedJson
+    for (let i = 1; i <= Object.keys(finedJson).length; i++) {
+
+        // First element position
+        let firstCol = -1;
+
+        // Iterate over the columns in the current row
+        for (let j = 1; j <= Object.keys(finedJson[i]).length; j++) {
+            // Find the first element in the row
+            if (finedJson[i][convertToExcelColumnName(j)] !== "") {
+                firstCol = j;
+
+                // Create a new node
+                const node = new CSVDefinedTreeNode(i, convertToExcelColumnName(firstCol),
+                    finedJson[i][convertToExcelColumnName(firstCol)]);
+
+                // Push the node into the stack
+                stack.push(node);
+
+                // Break out current loop
+                break;
+            }
+        }
+
+        // Now check the stack to see if the current row is a child of the previous row(s)
+        if (stack.length > 1) {
+            // TODO
+        }
+    }
+}
+
+
 const csvString = "a,,c,,e\nf,g,h,,j\nk,l,m,,o\np,q,r,,t\nu,v,w,,y\n,,,,\nz,1,2,,4\n5,6,7,,9\n0,!,@,,$\n%,^,&,,(";
+
+// Convert the CSV string into a JSON object
 const csvJson = csvToJson(csvString);
-console.log(csvJson);
 
-// Copy the csvJson object
-const csvJsonCopy = JSON.parse(JSON.stringify(csvJson));
-
-const compactedJson = finedCsvJson(csvJsonCopy);
-console.log(compactedJson);
+// Fine the CSV JSON
+const finedJson = finedCsvJson(csvJson);
+console.log(finedJson);
