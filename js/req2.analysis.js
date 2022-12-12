@@ -259,33 +259,35 @@ function finedCsvJson(csvJson) {
     // How many rows are in the csvJson?
     const numberOfRows = Object.keys(csvJson).length;
 
-    // Only keep the count of empty columns that are empty in every row
-    for (let key in emptyColumns) {
-        if (emptyColumns[key] !== numberOfRows) {
-                delete emptyColumns[key];
-        }
-    }
-    
-    // Now convert the emptyColumns dictionary into an array
-    const emptyColumnsArray = Object.keys(emptyColumns);
+    // Create a new JSON object to store the cleaned csvJson
+    const finedCsvJson = {};
 
-    // Remove the empty rows from the csvJson
-    if (emptyRows.length > 0) {
-        for (let i = 0; i < emptyRows.length; i++) {
-            delete csvJson[emptyRows[i]];
+    // Now copy the elements from the original csvJson to the new finedCsvJson
+    for (let i = 1; i <= Object.keys(csvJson).length; i++) {
+
+        // Skip the row if it is empty
+        if (emptyRows.includes(i)) {
+            continue;
         }
-    }
-    
-    // Remove the empty columns from the csvJson
-    if (emptyColumnsArray.length > 0) {
-        for (let i = 1; i <= Object.keys(csvJson).length; i++) {
-            for (let j = 0; j < emptyColumnsArray.length; j++) {
-                delete csvJson[i][emptyColumnsArray[j]];
+
+        for (let j = 1; j <= Object.keys(csvJson[i]).length; j++) {
+
+            // Skip the column if it is empty
+            if (emptyColumns[convertToExcelColumnName(j)] === numberOfRows) {
+                continue;
             }
+
+            // If the current row is undefined, initialize it
+            if (finedCsvJson[i] === undefined) {
+                finedCsvJson[i] = {};
+            }
+
+            // Copy the rest of the elements into the new finedCsvJson
+            finedCsvJson[i][convertToExcelColumnName(j)] = csvJson[i][convertToExcelColumnName(j)];
         }
     }
 
-    return csvJson;
+    return finedCsvJson;
 }
 
 
@@ -293,5 +295,8 @@ const csvString = "a,,c,,e\nf,g,h,,j\nk,l,m,,o\np,q,r,,t\nu,v,w,,y\n,,,,\nz,1,2,
 const csvJson = csvToJson(csvString);
 console.log(csvJson);
 
-const compactedJson = finedCsvJson(csvJson);
+// Copy the csvJson object
+const csvJsonCopy = JSON.parse(JSON.stringify(csvJson));
+
+const compactedJson = finedCsvJson(csvJsonCopy);
 console.log(compactedJson);
