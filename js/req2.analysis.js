@@ -1,6 +1,160 @@
+// Define a function to convert a JSON object representing a CSV table into a string
+class CSVDefinedTreeNode {
+    /**
+     * constructor
+     * @param {tuple} startPos
+     * @param {string} selfValue
+     * @param {dict} elements
+     */
+    constructor(startPos, selfValue, elements) {
+        this.startRow = startPos[0];
+        this.startCol = startPos[1];
+        this.selfValue = selfValue;
+        this.elements = elements;
+        this.children = [];
+        this.parent = null;
+    }
 
+    /**
+     * getter for the number of children
+     * @returns {int}
+     */
+    get countOfChildren() {
+        return this.children.length;
+    }
 
-// Function to convert an integer to its corresponding excel column name
+    /**
+     * getter for the number of elements
+     * @returns {int}
+     */
+    get countOfElements() {
+        return this.elements.length;
+    }
+
+    /**
+     * getter for the self value
+     * @returns {string}
+     */
+    get myValue() {
+        return this.selfValue;
+    }
+
+    /**
+     * getter for the cell position
+     * @returns {tuple}
+     */
+    get myPosition() {
+        return [this.startRow, this.startCol];
+    }
+
+    /**
+     * getter for the children
+     * @returns {array}
+     */
+    get myChildren() {
+        return this.children;
+    }
+
+    /**
+     * getter for the elements
+     * @returns {array}
+     */
+    get myElements() {
+        return this.elements;
+    }
+
+    /**
+     * getter for the parent
+     * @returns {CSVDefinedTreeNode}
+     */
+    get myParent() {
+        return this.parent;
+    }
+
+    /**
+     * setter for the parent
+     * @param {CSVDefinedTreeNode} parent
+     */
+    set myParent(parent) {
+        this.parent = parent;
+    }
+
+    /**
+     * method to add a child
+     * @param {CSVDefinedTreeNode} child 
+     */
+    addChild(child) {
+        child.parent = this;
+        this.children.push(child);
+    }
+
+    /**
+     * method to add an element
+     * @param {dict} element 
+     */
+    addElement(element) {
+        this.elements.push(element);
+    }
+
+    /**
+     * method to remove a child
+     * @param {CsvDefinedTreeNode} child 
+     */
+    removeChild(child) {
+        this.children.splice(this.children.indexOf(child), 1);
+    }
+
+    /**
+     * method to remove an element
+     * @param {dict} element 
+     */
+    removeElement(element) {
+        this.elements.splice(this.elements.indexOf(element), 1);
+    }
+
+    /**
+     * method to check if the node is a leaf
+     * @returns {boolean}
+     */
+    amIALeaf() {
+        return this.countOfChildren === 0;
+    }
+
+    /**
+     * method to check if the node is a root
+     * @returns {boolean}
+     */
+    amIARoot() {
+        return this.parent === null;
+    }
+
+    /**
+     * method to export self as a JSON object
+     * @returns {json}
+     */ 
+    toJson() {
+        let childrenJson = [];
+        for (let i = 0; i < this.countOfChildren; i++) {
+            childrenJson.push(this.myChildren[i].toJson());
+        }
+
+        return {
+            selfValue: this.selfValue,
+            startRow: this.startRow,
+            startCol: this.startCol,
+            elements: this.elements,
+            children: childrenJson
+        };
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Function to convert an integer to its corresponding excel column name
+ * @param {int} num 
+ * @returns 
+ */
 function convertToExcelColumnName(num) {
     let columnName = "";
     while (num > 0) {
@@ -22,7 +176,11 @@ function convertToExcelColumnName(num) {
 }
 
 
-// Define a function to convert a string representing a CSV table into a JSON object
+/**
+ * Define a function to convert a string representing a CSV table into a JSON object
+ * @param {string} csvString
+ * @returns 
+ */
 function csvToJson(csvString) {
     // Split the CSV string into an array of rows
     const rows = csvString.split(/\r?\n/);
@@ -56,167 +214,43 @@ function csvToJson(csvString) {
 }
 
 
-/*
+/**
+ * 
+ * @param {JSON} csvJson 
+ * @returns 
+ */
+function compactedCsvJson(csvJson) {
+    // First, we'll create a new empty object to store the compacted JSON data
+    const compactedJson = {};
 
+    // Next, we'll loop through each row in the original JSON data
+    for (const [rowIndex, row] of Object.entries(csvJson)) {
+        // For each row, we'll create a new empty object to store the compacted row data
+        const compactedRow = {};
 
-function groupRows(csvString) {
-    // split the string by line
-    var rows = csvString.split("\n");
-    
-    // convert each row to a JSON object and store them in an array
-    var jsonRows = [];
-    for (var i = 0; i < rows.length; i++) {
-      jsonRows.push(csvToJson(rows[i]));
-    }
-    
-    // create a variable to store the result
-    var result = [];
-    
-    // iterate over the rows
-    for (var i = 0; i < jsonRows.length; i++) {
-      // check if the current row is a root row (has no empty cells)
-      if (jsonRows[i].elements.A !== "" && jsonRows[i].elements.B !== "" && jsonRows[i].elements.C !== "" && jsonRows[i].elements.D !== "") {
-        // add the current row to the result
-        result.push(jsonRows[i]);
-        
-        // create a variable to store the child rows of the current root row
-        var childRows = [];
-        
-        // iterate over the remaining rows
-        for (var j = i + 1; j < jsonRows.length; j++) {
-          // check if the current row is a child row of the current root row
-          // (has more empty cells than the root row)
-          if (jsonRows[j].elements.A === "" && jsonRows[j].elements.B === "" && jsonRows[j].elements.C === "" && jsonRows[j].elements.D === "") {
-            // add the current row to the child rows of the current root row
-            childRows.push(jsonRows[j]);
-          }
+        // Then, we'll loop through each column in the row
+        for (const [columnIndex, columnValue] of Object.entries(row)) {
+            // If the column value is not empty, we'll add it to the compacted row object
+            if (columnValue.trim() !== '') {
+                compactedRow[columnIndex] = columnValue;
+            }
         }
-        
-        // if the current root row has child rows, add them to the result
-        if (childRows.length > 0) {
-          result[result.length - 1].leaves = childRows;
+
+        // If the compacted row object is not empty, we'll add it to the compacted JSON object
+        if (Object.keys(compactedRow).length > 0) {
+            compactedJson[rowIndex] = compactedRow;
         }
-      }
-    }
-    
-    // return the result
-    return result;
-  }
-  
-*/
-
-
-
-// const csvString = "1,2,3,4,\n5,6,7,8,\n0,2,4,6,"
-// const jsonObject = csvToJson(csvString);
-// console.log(jsonObject)
-
-// import other JS
-class CSVDefinedTreeNode {
-    // constructor
-    constructor(startPos, selfValue, elements) {
-        this.startRow = startPos[0];
-        this.startCol = startPos[1];
-        this.selfValue = selfValue;
-        this.elements = elements;
-        this.children = [];
-        this.parent = null;
     }
 
-    // getter for the number of children
-    get countOfChildren() {
-        return this.children.length;
-    }
-
-    // getter for the number of elements
-    get countOfElements() {
-        return this.elements.length;
-    }
-
-    // getter for the self value
-    get myValue() {
-        return this.selfValue;
-    }
-
-    // getter for the cell position
-    get myPosition() {
-        return [this.startRow, this.startCol];
-    }
-
-    // getter for the children
-    get myChildren() {
-        return this.children;
-    }
-
-    // getter for the elements
-    get myElements() {
-        return this.elements;
-    }
-
-    // getter for the parent
-    get myParent() {
-        return this.parent;
-    }
-
-    // setter for the parent
-    set myParent(parent) {
-        this.parent = parent;
-    }
-
-    // method to add a child
-    addChild(child) {
-        this.children.push(child);
-    }
-
-    // method to add an element
-    addElement(element) {
-        this.elements.push(element);
-    }
-
-    // method to remove a child
-    removeChild(child) {
-        this.children.splice(this.children.indexOf(child), 1);
-    }
-
-    // method to remove an element
-    removeElement(element) {
-        this.elements.splice(this.elements.indexOf(element), 1);
-    }
-
-    // method to check if the node is a leaf
-    amIALeaf() {
-        return this.countOfChildren === 0;
-    }
-
-    // method to check if the node is a root
-    amIARoot() {
-        return this.parent === null;
-    }
-
-    // method to check if the node is a branch
-    amIABranch() {
-        return this.countOfChildren > 0;
-    }
-
-    // method to export self as a JSON object
-    exportAsJSON() {
-        return {
-            startRow: this.startRow,
-            startCol: this.startCol,
-            selfValue: this.selfValue,
-            elements: this.elements,
-            children: this.children,
-        };
-    }
+    // Finally, we'll return the compacted JSON object
+    return compactedJson;
 }
+  
 
-const csvTreeNode = new CSVDefinedTreeNode(['1', 'A'], 'hello world', {
-  A: '',
-  B: '',
-  C: 'e1',
-  D: 'f1',
-  E: 'g1',
-  F: '',
-});
+const csvString = "a,b,c,,e\nf,g,h,,j\nk,l,m,,o\np,q,r,,t\nu,v,w,,y\n,,,,\nz,1,2,,4\n5,6,7,,9\n0,!,@,,$\n%,^,&,,(";
+const csvJson = csvToJson(csvString);
 
-console.log(csvTreeNode.exportAsJSON());
+console.log(csvJson);
+
+const compactedJson = compactedCsvJson(csvJson);
+console.log(compactedJson);
