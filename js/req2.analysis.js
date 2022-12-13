@@ -2,7 +2,7 @@
 class CSVDefinedTreeNode {
     /**
      * constructor
-     * @param {number} startRow
+     * @param {string} startRow
      * @param {string} startCol
      * @param {JSON} elements
      */
@@ -283,42 +283,67 @@ function finedCsvJson(csvJson) {
 
 
 /**
+ * Check the stack to see if some elements are probably consisted of a tree
+ * @param {Array} stack 
+ * @returns
+ */
+function updateTreeStack(stack) {
+    // Start from the last element of the stack then forward.
+    // If the startRow of the node is bigger than the previous one, 
+    // it means that the current node is a child node of the previous one.
+
+    // Top element in stack
+    const anchor = stack[stack.length - 1];
+
+    // Iterate over the stack from the second last element to the first element
+    for (let i = stack.length - 2; i >= 0; i--) {
+        // If the startRow of the current node is bigger than the previous one,
+        // it means that the current node is a child node of the previous one.
+
+        // TODO
+    }
+
+    return stack;
+}
+
+
+/**
  * This function will generate a tree from the Json object
  * @param {JSON} finedJson 
+ * @returns
  */
 function genJsonTree(finedJson) {
     // Use a list to perform a stack operation
-    const stack = [];
+    let stack = [];
 
     // Now iterate over the rows in the finedJson
-    for (let i = 1; i <= Object.keys(finedJson).length; i++) {
-
-        // First element position
-        let firstCol = -1;
-
+    for (const [rowKey, rowValue] of Object.entries(finedJson)) {
+    
         // Iterate over the columns in the current row
-        for (let j = 1; j <= Object.keys(finedJson[i]).length; j++) {
-            // Find the first element in the row
-            if (finedJson[i][convertToExcelColumnName(j)] !== "") {
-                firstCol = j;
+        for (const [colKey, colValue] of Object.entries(rowValue)) {
+            
+            // If the first column is not empty, it means that the current row is the node of CSVDefinedTreeNode
+            if (colValue !== "") {
 
-                // Create a new node
-                const node = new CSVDefinedTreeNode(i, convertToExcelColumnName(firstCol),
-                    finedJson[i][convertToExcelColumnName(firstCol)]);
+                // New a csv tree node
+                const node = new CSVDefinedTreeNode(rowKey, colKey, rowValue);
 
-                // Push the node into the stack
+                // Add the node to the stack
                 stack.push(node);
 
-                // Break out current loop
+                // Break current loop
                 break;
             }
         }
 
-        // Now check the stack to see if the current row is a child of the previous row(s)
+        // Process the stack
         if (stack.length > 1) {
-            // TODO
+            updateTreeStack(stack);
         }
     }
+
+    // Return the root node of the tree
+    return stack;
 }
 
 
@@ -329,4 +354,8 @@ const csvJson = csvToJson(csvString);
 
 // Fine the CSV JSON
 const finedJson = finedCsvJson(csvJson);
-console.log(finedJson);
+// console.log(finedJson);
+
+// Generate a tree from the finedJson
+const tree = genJsonTree(finedJson);
+// console.log(tree);
