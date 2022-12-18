@@ -4,9 +4,40 @@
     <meta charset="UTF-8">
     <title>Test</title>
 
+    <script src="./js/xlsx.full.min.js" type="text/javascript"></script>
     <script src="./js/req2.analysis.js" type="text/javascript"></script>
 </head>
 <body>
     <div id="test"></div>
+
+    <!-- Use an input type file to select the file -->
+    <input type="file" id="file" name="file" accept=".xlsx" onchange="handleFile()">
+
+    <div id="output">
+        <!-- The output will be displayed here -->
+    </div>
+
+
+    <script type="text/javascript">
+        function handleFile() {
+            var file = document.getElementById('file').files[0];
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var data = e.target.result;
+                var wb = XLSX.read(data, {type: 'binary'});
+                var ws = wb.Sheets[wb.SheetNames[0]];
+
+                var excelData = XLSX.utils.sheet_to_csv(ws, {
+                    FS: '(@_@)',
+                    RS: '\r\n'
+                });
+
+                document.getElementById('output').innerHTML = excelData;
+
+                console.log(excelData);
+            };
+            reader.readAsBinaryString(file);
+        }
+    </script>
 </body>
 </html>

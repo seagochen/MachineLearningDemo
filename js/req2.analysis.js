@@ -102,6 +102,61 @@ class ExcelDataEntity {
     }
 }
 
+
+class Cell {
+
+    /**
+     * constructor
+     * @param {int} rowInd 
+     * @param {int} colInd
+     * @param {string} cellValue
+     */
+    constructor(rowInd, colInd, cellValue) {
+        this.rowInd = rowInd;
+        this.colInd = colInd;
+        this.value = cellValue;
+    }
+
+    // getter for the cell value
+    get myCellValue() {
+        return this.value;
+    }
+
+    // getter for the row index
+    get myRowInd() {
+        return this.rowInd;
+    }
+
+    // getter for the column index
+    get myColInd() {
+        return this.colInd;
+    }
+
+    // setter for the row index
+    set myRowInd(value) {
+        this.rowInd = value;
+    }
+
+    // setter for the column index
+    set myColInd(value) {
+        this.colInd = value;
+    }
+
+    // setter for the cell value
+    set myCellValue(value) {
+        this.value = value;
+    }
+
+    // convert the cell to a JSON object
+    toJSON() {
+        return {
+            rowInd: this.rowInd,
+            colInd: this.colInd,
+            value: this.value
+        };
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -149,6 +204,41 @@ function excelNameToNumber(excelName) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-function autoFitCsvTable() {
-    
+
+
+function loadExcelSheet(workbook, sheetName) {
+
+}
+
+
+
+
+/**
+ * 
+ * @param {string} excel 
+ */
+function loadExcelData(excel) {
+    // read the excel file
+    const workbook = XLSX.read(data, {type: 'binary'});
+
+    // Check the count of the sheets if it is 2
+    if (workbook.SheetNames.length !== 2) {
+        alert('We need to compare two sheets, please check the excel file');
+        return;
+    }
+
+    // Get the first sheet data
+    const first_sheet = {
+        name: workbook.SheetNames[0],
+        data: XLSX.utils.sheet_to_html(workbook.Sheets[workbook.SheetNames[0]])
+    };
+
+    // Get the second sheet data
+    const second_sheet = {
+        name: workbook.SheetNames[1],
+        data: XLSX.utils.sheet_to_html(workbook.Sheets[workbook.SheetNames[1]])
+    };
+
+    // Load the first sheet
+    loadExcelSheet(workbook, firstSheetName);
 }
