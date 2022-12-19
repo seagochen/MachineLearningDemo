@@ -9,6 +9,8 @@
 
     <!-- Include the CSS files -->
     <link rel="stylesheet" type="text/css" href="./css/w3.css">
+    <link rel="stylesheet" type="text/css" href="./css/formatter/annotated.css">
+    <link rel="stylesheet" type="text/css" href="./css/formatter/html.css">
 
     <!-- Includes some other third party libraries -->
     <script src="./js/xlsx.full.min.js" type="text/javascript"></script>
@@ -62,7 +64,7 @@
                 //For Browsers other than IE.
                 if (reader.readAsBinaryString) {
                     reader.onload = function (e) {
-                        loadExcelData(e.target.result);
+                        showExcelDiff(e.target.result);
                     };
                     reader.readAsBinaryString(fileUpload.files[0]);
                 }

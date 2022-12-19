@@ -232,7 +232,7 @@ function loadExcelSheet(workbook, sheetName) {
 
         // iterate over the columns and use the Cell class to hold the data
         for (let j = 0; j < row.length; j++) {
-            const temp = new ExcelCellEntity(row[j], i, j);
+            const temp = new ExcelCellEntity(i, j, row[j]);
             rowCells.push(temp.toJSON());
         }
 
@@ -249,7 +249,7 @@ function loadExcelSheet(workbook, sheetName) {
  * Load the data from the given Excel file
  * @param {string} excel 
  */
-function loadExcelData(excel) {
+function showExcelDiff(excel) {
     // read the excel file
     const workbook = XLSX.read(excel, {type: 'binary'});
 
@@ -260,18 +260,14 @@ function loadExcelData(excel) {
     }
 
     // Get the first sheet data
-    const first_sheet = {
-        name: workbook.SheetNames[0],
-        data: loadExcelSheet(workbook, workbook.SheetNames[0])
-    };
+    const first_sheet = loadExcelSheet(workbook, workbook.SheetNames[0]);
 
     // Get the second sheet data
-    const second_sheet = {
-        name: workbook.SheetNames[1],
-        data: loadExcelSheet(workbook, workbook.SheetNames[1])
-    };
+    const second_sheet = loadExcelSheet(workbook, workbook.SheetNames[1]);
 
-    // Fine the two sheets, so that the 
+    // Compare the differences between the two sheets
+    var delta = jsondiffpatch.diff(first_sheet, second_sheet); 
 
-    console.log(loadExcelSheet(workbook, workbook.SheetNames[0]));
+    // Display the differences on the web page
+    document.getElementById('resultZone').innerHTML = jsondiffpatch.formatters.html.format(delta, first_sheet);
 }
