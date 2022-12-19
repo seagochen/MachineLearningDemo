@@ -20,21 +20,11 @@
 
     <script type="text/javascript">
         function handleFile() {
-            var file = document.getElementById('file').files[0];
-            var reader = new FileReader();
+            const file = document.getElementById('file').files[0];
+            const reader = new FileReader();
             reader.onload = function(e) {
-                var data = e.target.result;
-                var wb = XLSX.read(data, {type: 'binary'});
-                var ws = wb.Sheets[wb.SheetNames[0]];
-
-                var excelData = XLSX.utils.sheet_to_csv(ws, {
-                    FS: '(@_@)',
-                    RS: '\r\n'
-                });
-
-                document.getElementById('output').innerHTML = excelData;
-
-                console.log(excelData);
+                const data = e.target.result;
+                loadExcelData(data);
             };
             reader.readAsBinaryString(file);
         }
